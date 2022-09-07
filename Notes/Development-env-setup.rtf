@@ -1,0 +1,122 @@
+1> Jasmine is behavior driven testing framework.
+
+2> describe('calculator service', () => {  // test suites
+    it('function : add', () => {  // each test specs
+        pending();  // inbuilt method if the test has not yet ready
+    })
+
+    it('function : subtract', () => {
+        pending();
+    })
+})
+
+3> we can also give 
+    fail() like pending method
+
+4> Writing a simple test case
+
+    it('function : add', () => {
+        const calculatorService = new CalculatorService(new LoggerService());
+        const number1 = 10,
+              number2 = 20;
+
+        expect(calculatorService.add(number1, number2)).toBe(number1+number2);
+    })
+
+5> we can pass second params in all assertion to understand the test case failed more
+    it('function : subtract', () => {
+        const calculatorService = new CalculatorService(new LoggerService());
+        const number1 = 10,
+              number2 = 20;
+
+        expect(calculatorService.subtract(number1, number2)).toBe(number1*number2, 'subtract function failed');  // important
+    })
+
+6> The actual add method in calculatorService is
+    add(n1: number, n2:number) {
+        this.logger.log("Addition operation called");
+        return n1 + n2;
+    }
+
+    we can see the logger service is used inside add method for log method once.
+    Suppose it is expensive call and should be called only one time.This thing can also be
+    checked in Jasmine.
+
+    We will use Jasmine spy
+
+7> 
+    it('function : add', () => {
+        const logger = new LoggerService();
+        const calculatorService = new CalculatorService(logger);
+        const number1 = 10,
+              number2 = 20;
+
+        expect(calculatorService.add(number1, number2)).toBe(number1+number2);
+    })
+
+    we are passing the actual logger instance in calculator service. But we should pass the fake class 
+    that we will study later.
+
+    Now we will spyon log method logger service class(or object)
+
+8> 
+    it('function : add', () => {
+        const logger = new LoggerService();
+        spyOn(logger, 'log');  // format spyOn(object, list of method of objects)
+        const calculatorService = new CalculatorService(logger);
+        const number1 = 10,
+              number2 = 20;
+
+        expect(calculatorService.add(number1, number2)).toBe(number1+number2);
+        expect(logger.log).toHaveBeenCalledTimes(1);  // to check for one time or not
+    })
+
+9> We are writing here UTs for calculatorService , so we should actual instance of only
+   calculatorService. All other direct depedencies should be mocked or fake.
+
+10> We don't care what are implementation of log method because we only testing here calculatorService method.
+    So we have to fake that logger service instead of creating its actual instance. 
+
+    it('function : add', () => {
+        const logger = jasmine.createSpyObj('LoggerService', ['log']);
+        // spyOn(logger, 'log'); don't need now
+        const calculatorService = new CalculatorService(logger);
+        const number1 = 10,
+              number2 = 20;
+
+        expect(calculatorService.add(number1, number2)).toBe(number1+number2);
+        expect(logger.log).toHaveBeenCalledTimes(1);
+    })
+
+    creating a fake service of any name (giving LoggerService here) having log method
+    so that while calling add method of calculatorService it finds this.logger.log easily.
+
+    If we define like below
+    const logger = jasmine.createSpyObj('LoggerService', []);  // no method
+    test will fail it doesn't find log method on logger.
+    Here since we are doing nothing except console.log in log method so we dont have to think what this method returns
+
+11> 
+    In logger service
+        log() {
+            return 'The sum of two numbers is:';
+        }
+
+    In calculatorService
+        add(n1: number, n2:number) {
+            let result = this.logger.log();
+            return result+(n1+n2);
+        }
+
+    In calculatorService specs
+         it('function : add', () => {
+            const logger = jasmine.createSpyObj('LoggerService', ['log']);
+            const calculatorService = new CalculatorService(logger);
+            const number1 = 10,
+                number2 = 20;
+
+            logger.log.and.returnValue('The sum of two numbers is:');
+
+            expect(calculatorService.add(number1, number2)).toBe('The sum of two numbers is:'+(number1+number2));
+            expect(logger.log).toHaveBeenCalledTimes(1);
+        })
