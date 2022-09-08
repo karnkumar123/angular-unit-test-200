@@ -1,5 +1,7 @@
 1> Jasmine is behavior driven testing framework.
 
+2> If we don't want ng test runs on every save then we will use ng test --no-watch
+
 2> describe('calculator service', () => {  // test suites
     it('function : add', () => {  // each test specs
         pending();  // inbuilt method if the test has not yet ready
@@ -71,7 +73,7 @@
         expect(logger.log).toHaveBeenCalledTimes(1);  // to check for one time or not
     })
 
-9> We are writing here UTs for calculatorService , so we should actual instance of only
+9> We are writing here UTs for calculatorService , so we should use actual instance of only
    calculatorService. All other direct depedencies should be mocked or fake.
 
 10> We don't care what are implementation of log method because we only testing here calculatorService method.
@@ -120,3 +122,45 @@
             expect(calculatorService.add(number1, number2)).toBe('The sum of two numbers is:'+(number1+number2));
             expect(logger.log).toHaveBeenCalledTimes(1);
         })
+
+
+12> We shouldn't instantiate service or spy in each specs. We have to change the design.
+    We use beforeEach execution block which execution before each and every test specs.
+
+        describe('calculator service', () => {
+            let calculatorService: CalculatorService;
+            let loggerSpy: any;
+
+            beforeEach(() => {
+                loggerSpy = jasmine.createSpyObj('LoggerService', ['log']);
+                calculatorService = new CalculatorService(loggerSpy);
+            })
+
+            it('function : add', () => {
+                const number1 = 10, number2 = 20;
+                loggerSpy.log.and.returnValue('The sum of two numbers is:');
+                expect(calculatorService.add(number1, number2)).toBe('The sum of two numbers is:'+(number1 + number2));
+                expect(loggerSpy.log).toHaveBeenCalledTimes(1);
+            })
+
+            it('function : subtract', () => {
+                const number1 = 10, number2 = 20;
+                loggerSpy.log.and.returnValue('The subtract of two numbers is:');
+                expect(calculatorService.subtract(number1, number2)).toBe('The subtract of two numbers is:'+(number1 - number2));
+                expect(loggerSpy.log).toHaveBeenCalledTimes(1);
+            })
+        })
+
+13> Using Dependency Injection
+    -> Extra jasmine test utilites.
+    -> disble specs or suites (append x in front)
+        e.g-> 
+            xdescribe('calculator service', () => {
+            or
+            xit('function : add', () => {
+
+    -> focus on only one specs of suites while debugging (append f in front)
+         e.g-> 
+            fdescribe('calculator service', () => {
+            or
+            fit('function : add', () => {
