@@ -3,7 +3,7 @@ import { CalculatorService } from "./calculator.service";
 import { LoggerService } from "./logger.service";
 
 
-xdescribe('calculator service', () => {
+describe('calculator service', () => {
     let calculatorService: CalculatorService;
     let loggerSpy: any;
 
@@ -30,5 +30,10 @@ xdescribe('calculator service', () => {
         loggerSpy.log.and.returnValue('The subtract of two numbers is:');
         expect(calculatorService.subtract(number1, number2)).toBe('The subtract of two numbers is:'+(number1 - number2));
         expect(loggerSpy.log).toHaveBeenCalledTimes(1);
+    })
+
+    it('function : findSquare', () => {
+        const number1 = 10;
+        expect(calculatorService.findSquare(number1)).toBe(number1 * number1);
     })
 })

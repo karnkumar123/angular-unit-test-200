@@ -22,6 +22,9 @@ export class CalculatorService {
     return result+(n1-n2);
   }
 
+  findSquare(num: number){
+    return Math.pow(num,2);
+  }
 
 }
 
