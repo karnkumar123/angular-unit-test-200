@@ -152,6 +152,20 @@
         })
 
 13> Using Dependency Injection
+    We use TestBed
+
+     beforeEach(() => {
+        loggerSpy = jasmine.createSpyObj('LoggerService', ['log']);
+        TestBed.configureTestingModule({
+            providers: [
+                CalculatorService,
+                {provide: LoggerService, useValue: loggerSpy}
+            ]
+        })
+        calculatorService = TestBed.inject(CalculatorService);
+    })
+
+14> 
     -> Extra jasmine test utilites.
     -> disble specs or suites (append x in front)
         e.g-> 

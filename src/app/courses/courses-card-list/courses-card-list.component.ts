@@ -11,11 +11,9 @@ import {filter, tap} from 'rxjs/operators';
 })
 export class CoursesCardListComponent implements OnInit {
 
-  @Input()
-  courses: Course[];
+  @Input() courses: Course[];
 
-  @Output()
-  courseEdited = new EventEmitter();
+  @Output() courseEdited = new EventEmitter();
 
   constructor(private dialog: MatDialog) {
 
